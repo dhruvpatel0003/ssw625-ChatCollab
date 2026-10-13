@@ -1,0 +1,2 @@
+Run ID,Condition ID,Condition Name,Run Number,Model,Status,Duration (s),Message Count,Compilation Success,Tests Passed,Tests Failed,QA Approved,Created At
+exp_C1_BASELINE_run1_a4875d,C1_BASELINE,Baseline Institutional Knowledge,1,llama3.1:latest,COMPLETED,609.98,6,True,11,0,True,1791898065.4822674

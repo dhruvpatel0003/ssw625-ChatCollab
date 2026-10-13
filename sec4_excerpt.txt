@@ -1,0 +1,45 @@
+we consider eight experimental conditions. For each
+experimental condition, we conduct three runs of the ChatCollab system until completion of the
+code and record the full dialog transcript of AI and human agents for each run. This resulted in 237
+transcript messages total across all runs, including the control.
+Data Preparation and Cleaning. For each run, ChatCollab outputs the conversational transcript
+with a pattern for displaying speakers, roles, timestamps, and messages to a markdown file. We
+use a Python script to automate the extraction of conversational data from markdown files and
+convert it into structured CSV formats. Using regular expressions, the content of each file is split
+into dictionaries stored in a list, then written to a CSV file where each row represented a single
+conversational turn. This format facilitates easier analysis of turn-based interactions. The code for
+this script appears in Appendix A.
+Framework Selection. We chose to use the well established Bales’ Interaction Process Analysis Frame-
+work [10] to perform our collaboration analysis, though we believe our method is generalizable to
+other frameworks. The framework is as follows:
+(1) Shows Solidarity: raises other’s status, gives help, reward.
+(2) Shows Tension Release: jokes, laughs, shows satisfaction.
+(3) Agrees: shows passive acceptance, understands, concurs, complies.
+(4) Gives Suggestion: direction, implying autonomy for other.
+(5) Gives Opinion: evaluation, analysis, expresses feeling, wish.
+(6) Gives Orientation: information, repeats, clarifies, confirms.
+(7) Asks for Orientation: information, repetition, confirmation.
+(8) Asks for Opinion: evaluation, analysis, expression of feeling.
+(9) Asks for Suggestion: direction, possible ways of action.
+(10) Disagrees: shows passive rejection, formality, withholds help.
+(11) Shows Tension: asks for help, withdraws out of field.
+(12) Shows Antagonism: deflates other’s status, defends or asserts self.
+API Calls and Prompt Engineering. We found it effective to use a straightforward prompt that
+included a full description of the task and the expected format of the response. We integrated Bales’
+IPA framework into the prompt used for automated classification, using an iterative prompt devel-
+opment process with human verification to identify the optimal wording. We then systematically
+applied this framework to classify each agent action using an LLM (OpenAI’s GPT-4 Turbo). Note
+that results were single-coded to the best fitting category. We experimented with different lengths
+of surrounding context, ranging from the prior two turns to the full context from the given run.
+We found it best to keep the prompts concise.
+The final prompt includes the main categorization criteria plus None of the Above to account for
+cases that do not clearly fit into any of the categories. We provided the LLM with the roles and
+messages of up to two turns before, the current message itself, and two turns after the intended
+message. The prompt is provided in Appendix A.3.
+Human Coding. A portion of the data was additionally coded using human review from members
+of our team to check for accuracy. This was done to ensure the reliability of the LLM-augmented
+classification processes and allowed for iterative refinement of the prompts.
+=== PAGE 11 ===
+ChatCollab: Exploring Collaboration Between Humans and AI Agents in Software Teams 11
+Quantitative Analysis. Once automatically coded by the LLM, we summed the counts of each
+interaction ty

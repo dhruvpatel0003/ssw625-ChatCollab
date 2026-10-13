@@ -1,0 +1,401 @@
+--- SLIDE 1 ---
+PAPER PRESENTATION
+ChatCollab: Exploring Collaboration
+Between Humans and AI Agents in Software Teams
+A configurable framework where humans and autonomous AI agents collaborate as peers in 
+software teams.
+H
+ CEO
+ PM
+ DEV
+ QA
+Benjamin Klieger et al. • Stanford University • arXiv:2412.01992 Presented by: [Your Name / Team]
+Source: Klieger et al., ChatCollab (2024) 1
+--- SLIDE 2 ---
+Outline
+Following the professor’s sample structure, with added architecture + critical analysis
+01 Context
+Why now?
+02 Problem
+Research gap
+03 Solution
+ChatCollab idea
+04 Related 
+Work & 
+LimitationsPrior systems
+05 Approach 
+Overview
+How it works
+06 Validation & 
+Results
+Evidence
+07 Critical 
+Analysis + 
+DemoOur take
+Presentation structure adapted from the provided class example 2
+--- SLIDE 3 ---
+Context: From Coding Assistants to Hybrid Teams
+1
+Traditional
+Software Team
+Human-only
+collaboration
+2
+AI Coding
+Assistant
+Human directs;
+AI assists
+3
+Multi-Agent
+Development
+AI roles coordinate
+with each other
+4
+ChatCollab
+Humans + AI
+as peer teammates
+Key shift: AI is no longer only a tool for one human — it becomes a 
+configurable teammate inside a collaborative organization.
+Paper pp. 1–2: motivation and human–AI team framing 3
+--- SLIDE 4 ---
+Problem: Existing Approaches Leave a Collaboration Gap
+1 Copilots
+Human remains the primary 
+decision maker; interaction is 
+mainly human  AI.↔
+2 Multi-agent 
+systems
+AI agents can specialize, but 
+humans are often outside the 
+agent team.
+3 Human–AI 
+research
+Much prior work focuses on 
+dyadic interaction or 
+measurable micro-tasks.
+Research gap
+Can humans and autonomous AI agents participate in the same team, in 
+interchangeable roles, while preserving realistic coordination and useful 
+work output?
+Paper pp. 1–3: introduction and related work 4
+--- SLIDE 5 ---
+What Does the Paper Contribute?
+1
+ Configurable Hybrid 
+Teams
+A framework where humans and AI agents can occupy software-team 
+roles.
+2
+ Collaboration Analysis An automated method for measuring role-specific collaborative behavior .
+3
+ Software Benchmark Comparison with ChatGPT, MetaGPT, ChatDev, and SuperAGI on a coding 
+task.
+Two evaluation lenses: team interaction quality + software work-product quality
+Paper p. 2: main contributions 5
+--- SLIDE 6 ---
+Solution: ChatCollab as a Human–AI Software Team
+CEO
+HUMA
+N
+ PM
+ DEV
+ QA
+Roles are configurable: humans can direct the team, be directed by an AI agent, 
+coach AI agents, or be coached by them.
+The environment and role context are shared across participants.
+Paper pp. 4–5: design goals and configurable roles 6
+--- SLIDE 7 ---
+System Architecture: Shared Event Timeline + Autonomous 
+Agents
+SHARED EVENT 
+TIMELINE
+AI CEO
+Observe
+Build context
+LLM decision
+Act / wait
+AI PM
+Observe
+Build context
+LLM decision
+Act / wait
+AI Developer
+Observe
+Build context
+LLM decision
+Act / wait
+AI QA
+Observe
+Build context
+LLM decision
+Act / wait
+GET events POST actions
+Simplified from Figure 1, paper p. 6 7
+--- SLIDE 8 ---
+How an AI Agent Operates
+1
+Check 
+timeline
+2
+Detect new 
+event
+3
+Build 
+prompt + 
+context
+4
+LLM 
+decides
+5
+Message / 
+file / no 
+action
+6
+Post event
+Autonomy comes from repeated observe  decide  act/inaction cycles. Agents can → →
+wait when dependencies are not ready instead of following a fixed script.
+EVENT-DRIVEN, NOT FIXED-SEQUENCE
+Paper p. 6: event-driven actions and agent autonomy 8
+--- SLIDE 9 ---
+Example Collaboration: From Requirement to Revision
+1
+Human Client
+Requirements
+2
+AI Product 
+Manager
+Clarify + PRD
+3
+AI CEO
+Approve + 
+coordinate
+4
+AI Developer
+Implement
+5
+AI QA
+Review
+6
+AI Developer
+Revise
+Observed behaviors included role identification, following process, coordination, 
+acknowledgments/updates, and waiting for required inputs.
+Paper pp. 7–9: Figure 2 and observed collaboration behavior 9
+--- SLIDE 10 ---
+Related Work: Where ChatCollab Fits
+AI-Assisted
+Development
+GitHub Copilot
+Tabnine / Ghostwriter 
+/ Codeium
+Human remains 
+central
+Multi-Agent
+Software 
+Development
+MetaGPT
+ChatDev
+SuperAGI
+Role-based AI teams
+Human–AI
+Collaboration
+Peer interaction
+Learning / mentoring
+Social team dynamics
+ChatCollab
+Humans + AI peers
+Configurable roles
+Shared 
+communication
+Collaboration 
+measurement
+PAPER'S GAP
+Paper pp. 2–4: related work categories 10
+--- SLIDE 11 ---
+Approach Overview: Collaboration Analysis Pipeline
+1
+Team run
+Human + AI
+conversation
+2
+Transcript
+Markdown
+messages
+3
+Preprocess
+Python + regex
+ CSV→
+4
+Classify
+GPT-4 Turbo
++ Bales IPA
+5
+Analyze
+Counts +
+proportions
+8
+experimental
+conditions
+ 3
+runs per
+condition
+ 237
+transcript
+messages
+Paper pp. 9–10: collaboration-analysis methodology 11
+--- SLIDE 12 ---
+Measuring Collaboration with Bales’ Interaction Process 
+Analysis
+1
+Positive social
+Shows Solidarity • Tension Release • Agrees
+2
+Task contribution
+Gives Suggestion • Opinion • Orientation
+3
+Task questions
+Asks Orientation • Opinion • Suggestion
+4
+Negative social
+Disagrees • Shows Tension • Antagonism
+Each message was single-coded to the best-fitting category; human coding was used to check reliability.
+Paper p. 10: Bales IPA framework and LLM labeling 12
+--- SLIDE 13 ---
+Validation Setup: Two Complementary Evaluations
+A. Collaboration Dynamics
+• Three AI agents + one human in the primary 
+collaboration experiment
+• Eight experimental conditions; three runs per 
+condition
+• Prompted institutional knowledge changes 
+collaborative behavior
+• LLM-coded messages compared with human coding
+OUTCOME: ROLE-SPECIFIC BEHAVIOR
+B. Software Work Product
+• Text-based tic-tac-toe benchmark
+• Target implementation language: Java
+• GPT-4 with at least 10 runs for each compared system
+• Compared with ChatGPT, SuperAGI, MetaGPT, and 
+ChatDev
+OUTCOME: CODE / FEATURE QUALITY
+Paper pp. 13–14: code-analysis benchmark and collaboration experiment 13
+--- SLIDE 14 ---
+Results I: Collaboration Was Measurably Role-Specific
+78.1%
+Human–AI coding agreement
+κ = 72.9%
+Cohen’s Kappa
+Evidence that automated coding aligned 
+substantially with human coding in this 
+experiment.
+AI CEO
+AI Product Manager
+AI Developer
+0 2 4 6 8 10 12 14 16 18 20
+Share of messages classified as “Gives Suggestion”
+Interpretation
+The CEO suggested more often 
+than the Product Manager or 
+Developer , supporting 
+differentiated role behavior .
+Paper p. 11: human–AI coding alignment and role-specific contributions 14
+--- SLIDE 15 ---
+Results II: Competitive Software Output
+ChatGPT
+ SuperAGI
+ MetaGPT
+ ChatDev
+ ChatCollab
+SAME TIC-TAC-TOE BENCHMARK
+The authors report ChatCollab’s output as equal to or better than the compared 
+systems, especially for feature inclusion and documentation.
+Proposed explanation: specialized agents can proofread, request revisions, and ask the human client clarifying questions.
+Paper pp. 13–14: code-analysis results; qualitative summary only—no invented scores 15
+--- SLIDE 16 ---
+Limitations: What the Authors Acknowledge
+! Scale
+Small number of collaboration and 
+code-quality examples.
+! Human impact
+No dedicated large user study of social 
+dynamics / UX.
+! Cost
+Event-driven autonomy can create 
+significant token/computational 
+expense.
+! Platform
+Communication is centered on Slack, 
+limiting functionality.
+! Identity
+Agents generally do not know which 
+teammates are human.
+! LLM dependence
+Capability remains constrained by 
+underlying model performance.
+Paper pp. 15–16: limitations 16
+--- SLIDE 17 ---
+Our Critical Analysis: Why the Paper Matters — and What 
+Comes Next
+Strengths
+• Treats AI as a teammate, not only a coding tool
+• Event-driven architecture supports genuine waiting 
+and autonomy
+• Measures collaboration, not just final code
+• Role prompting produces observable behavioral 
+differences
+• Public code/data improves reproducibility
+What we would test next
+• Larger and more diverse software tasks
+• More human participants and team structures
+• Cost, latency, and productivity trade-offs
+• Human-aware vs human-agnostic agents
+• Failure recovery, safety, and accountability
+BEST DISCUSSION SLIDE FOR Q&A
+Synthesis grounded in the paper’s findings and stated future-work directions 17
+--- SLIDE 18 ---
+Extra-Points Demo: Reproduce the Idea with Free Tools
+G
+GitHub
+Inspect public code/data
+V
+VS Code
+Run / inspect locally
+M
+Mermaid
+Architecture + sequence 
+diagrams
+d
+diagrams.net
+Polished system diagrams
+P
+Python
+Transcript parsing / charts
+S
+Slack Free
+Human–agent interaction 
+demo
+Suggested live demo: Human requirement  AI PM clarification  AI Developer implementation  AI QA → → →
+review  revision→
+Keep the demo small (2–3 minutes) and clearly separate it from the paper’s original experiment.
+Presentation enhancement: free-tool demo based on the paper’s workflow 18
+--- SLIDE 19 ---
+Takeaway
+ChatCollab asks a bigger question than
+“Can AI write code?”
+Can humans and autonomous AI agents form a functioning 
+software team with meaningful roles, coordination, and 
+measurable collaboration?
+The paper’s initial evidence says: promising — but larger human studies, more complex 
+tasks, and efficiency improvements are still needed.
+QUESTIONS?
+Klieger et al., ChatCollab (2024) 19
+--- SLIDE 20 ---
+References & Presentation Sources
+1 Klieger , B., Charitsis, C., Suzara, M., Wang, S., Haber , N., & Mitchell, J. C. (2024). ChatCollab: Exploring Collaboration Between Humans and AI Agents in Software Teams. arXiv:2412.01992.
+2 Bales, R. F. (1950). Interaction Process Analysis: A Method for the Study of Small Groups. Addison-Wesley.
+3 ChatDev (2023). Communicative Agents for Software Development.
+4 MetaGPT (2023). Multi-agent framework for software development.
+5 SuperAGI (2023). Autonomous agent framework.
+6 Provided class presentation example: “Where should the Bugs be Fixed?” — used only for outline/format guidance.
+Note: Quantitative values shown in this deck are taken from the paper; no unreported benchmark scores were invented.
+Primary source: uploaded ChatCollab paper 20

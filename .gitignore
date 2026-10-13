@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# SQLite database (contains local session data, not for version control)
+data/*.db
+data/*.sqlite
+*.db
+*.sqlite
+
+# Java compiled files generated in sandboxes
+workspaces/*/src/**/*.class
+workspaces/**/*.class
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Temp / logs
+*.log
+tmp/

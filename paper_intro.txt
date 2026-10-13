@@ -1,0 +1,238 @@
+=== PAGE 1 ===
+ChatCollab: Exploring Collaboration Between Humans and
+AI Agents in Software Teams
+BENJAMIN KLIEGER∗, Stanford University, USA
+CHARIS CHARITSIS∗, Stanford University, USA
+MIROSLAV SUZARA∗, Stanford University, USA
+SIERRA WANG∗, Stanford University, USA
+NICK HABER∗, Stanford University, USA
+JOHN C. MITCHELL∗, Stanford University, USA
+Abstract We explore the potential for productive team-based collaboration between humans and Artificial
+Intelligence (AI) by presenting and conducting initial tests with a general framework that enables multiple
+human and AI agents to work together as peers. ChatCollab’s novel architecture allows agents - human or AI -
+to join collaborations in any role, autonomously engage in tasks and communication within Slack, and remain
+agnostic to whether their collaborators are human or AI. Using software engineering as a case study, we find
+that our AI agents successfully identify their roles and responsibilities, coordinate with other agents, and
+await requested inputs or deliverables before proceeding. In relation to three prior multi-agent AI systems for
+software development, we find ChatCollab AI agents produce comparable or better software in an interactive
+game development task. We also propose an automated method for analyzing collaboration dynamics that
+effectively identifies behavioral characteristics of agents with distinct roles, allowing us to quantitatively
+compare collaboration dynamics in a range of experimental conditions. For example, in comparing ChatCollab
+AI agents, we find that an AI CEO agent generally provides suggestions 2-4 times more often than an AI
+product manager or AI developer, suggesting agents within ChatCollab can meaningfully adopt differentiated
+collaborative roles. Our code and data can be found at: https://github.com/ChatCollab.
+CCS Concepts: • Human-centered computing→ Collaborative and social computing ; • Computing
+methodologies→ Artificial intelligence.
+Additional Key Words and Phrases: human-AI collaboration, autonomous AI agents
+1 INTRODUCTION
+Advancements in Large Language Models (LLMs) and Artificial Intelligence (AI) agent systems
+have significantly increased the potential for productive collaboration between humans and AI.
+Tools like GitHub Copilot [1] have become widely used. However, popular copilots place humans
+in the primary decision-making role and typically do not alter the dynamics of human-to-human
+interaction. Most prior research on human-AI collaboration to date (e.g., [16, 17, 23, 24, 28, 33, 34,
+41, 44, 47]) has similarly focused on dyadic interaction and quantitatively measurable tasks such
+as collaborative gaming [47], object identification [46] or decision making [33]. More recently, a
+new class of AI agent systems [2–4, 36] has emerged, coordinating multiple AI agents to complete
+software development or similar tasks. Looking ahead, however, we believe that more flexibly
+structured collaborative teams comprising both humans and AI agents will become more prominent,
+allowing both humans and AI agents to assume diverse roles as needed. This is a natural evolution
+from structured human-only teams, allowing human-AI collaboration to draw on the rich history
+of research and practical experience in management and organizational behavior.
+∗All authors have contributed equally to this research.
+Authors’ addresses: Benjamin Klieger, klieger@stanford.edu, Stanford University, Stanford, CA, USA, 94305; Charis Charitsis,
+charis@stanford.edu, Stanford University, Stanford, CA, USA, 94305; Miroslav Suzara, msuzara@stanford.edu, Stanford
+University, Stanford, CA, USA, 94305; Sierra Wang, sierraw@stanford.edu, Stanford University, Stanford, CA, USA, 94305;
+Nick Haber, nhaber@stanford.edu, Stanford University, Stanford, CA, USA, 94305; John C. Mitchell, jcm@stanford.edu,
+Stanford University, Stanford, CA, USA, 94305.
+arXiv:2412.01992v1  [cs.HC]  2 Dec 2024
+=== PAGE 2 ===
+2 Klieger, Charitsis, Suzara, Wang, Haber, Mitchell
+To explore the broad potential for productive team-based collaboration between humans and
+AI, we present ChatCollab, a configurable experimental system that supports AI agents as peer
+collaborators with humans. While ChatCollab is inherently task-agnostic, we have initially applied it
+to software development. Software teams offer a compelling use case due to the inherent complexity
+of the development process, the complementary nature of AI coding abilities to human skills, and
+the ability to leverage familiar team roles such as designers, engineers, product managers, and
+quality assurance testers.
+In ChatCollab, one or more humans can actively participate as team members alongside any
+number of AI agents, each filling roles such as software developers, UI/UX designers, or quality as-
+surance testers. Additionally, ChatCollab has the potential to facilitate human learning, particularly
+in contributing effectively to structured software teams. In human learning, AI agents with greater
+expertise can act as mentors, for example, while others can serve as practice partners [38, 42] or
+teachable agents [14]. This framework might help humans acquire new skills, refine their existing
+abilities, and better integrate into collaborative, AI-augmented environments.
+We evaluate ChatCollab outcomes both by evaluating the quality of the software produced
+(work product) and by measuring characteristics of team interaction. It is relatively straightforward
+to see that ChatCollab’s AI agents identify their roles and responsibilities, autonomously follow
+established processes, coordinate and communicate with other agents, and provide updates while
+appropriately waiting for input before proceeding. To evaluate collaborative interaction more
+deeply, we describe a method for AI-based collaboration analysis that is based in part on traditional
+qualitative coding methods used in the social sciences (see section 2.4). Using this automated
+method, we show how varying role definitions and social conventions (expressed as AI prompts)
+leads to measurable variations in the collaborative behavior of agents. We also measure ways that
+AI agents collaborate differently based upon their roles. Looking at the quality of work product, we
+find that ChatCollab produces equal or superior software to three prior systems that use multiple
+AI agents for software development [2–4], while additionally allowing humans to engage directly
+in the development process.
+The main contributions of this paper include:
+• We introduce ChatCollab, a configurable system for human-AI collaborative teams, agnostic
+to application but used in this paper for software development.
+• We introduce and demonstrate a collaboration analysis method to measure the effectiveness
+of prompting AI agents to embody different roles and demonstrate specific social knowledge
+through collaborative behavior.
+• We compare the characteristics of software produced by three prior multi-AI-agent systems,
+MetaGPT, ChatDev, and SuperAGI [2–4], all designed for software development, with each
+other and with ChatCollab in a case study.
+The paper is organized with section 2 summarizing the relevant background for the development
+of ChatCollab, section 3 introducing the ChatCollab system, section 4 detailing the collaboration
+analysis method, section 5 presenting the code quality evaluation, where we compare ChatCollab
+to three other multi-AI-agent systems, and section 6 describing limitations of our system and our
+analyses. Finally, section 7 concludes and proposes directions for future work.
+2 RELATED WORK
+2.1 AI-Assisted Software Development
+There is a rich history of AI-based tools for specific aspects of software development. Summaries
+organized according to phases of the software development process appear in [11, 12]. Beginning
+with Github Copilot [ 1], a number of copilot tools integrate calls to an LLM into the IDE. A
+=== PAGE 3 ===
+ChatCollab: Exploring Collaboration Between Humans and AI Agents in Software Teams 3
+comparative study of Github Copilot, Tabnine, Replit Ghostwriter, and Codeium appears in a
+Codeium blog post [37]. Research studies of the power and limitations of Github copilot and direct
+access to LLMs appear in [22, 48].
+2.2 Multi-AI-Agent Software Development
+Prior work observes that LLMs may struggle with hierarchical multi-step reasoning tasks like
+generating complex programs [ 22]. Observing this limitation, Zelikman et al. [ 43] introduce a
+framework that automatically decomposes algorithmic tasks into hierarchical natural language
+function descriptions and then proceeds to select suitable code implementations for each function.
+The advantage of enlisting multiple agents is illustrated by the fact that in comparison to directly
+sampling AlphaCode and Codex, the system developed by Zelikman et al. solves more competition-
+level problems in the APPS dataset, resulting in over 75 percent higher pass rates.
+Prior systems have used multiple AI agents to simulate realistic human behavior [35] and, for
+collaborative software development in particular, have assigned specific roles to agents [25, 36]. In
+particular, the three structured agent systems MetaGPT, ChatDev, and SuperAGI [2–4] we compare
+to ChatCollab and to each other all divide tasks and responsibilities using familiar human roles.
+2.3 Human interaction with AI agents for Learning
+We are not aware of extensive prior work on multi-agent systems in which multiple humans interact
+as peers with multiple agents to produce a work product. However, some interesting prior systems
+explore educational settings that involve humans and multiple AI agents. Many of them seem best
+regarded as learning through role-playing or simulation.
+A recent position paper explains and summarizes prior use of a partner-mentor paradigm, in
+which one AI agent serves as a mentor (or instructor) and another AI agent serves as a practice
+partner [42]. Examples cited include Active Listening, Conflict Avoidance, Conflict Resolution,
+Empathy, and Rhetoric, as well as interactive TA (teacher) training as described below; a compelling
+case study appears in [38]. Biswas et al. propose a learning system with a multi-agent architecture
+that included four agents: a teachable agent, a mentor agent, a student agent, and an environment
+agent [14]. Similarly, Soliman and Gütl identify and distinguish between the types of Pedagogical
+Agents which contribute to learning in Virtual Learning Environments: agents for learning per-
+sonalization, teachable agents, and multiple agents supporting group learning [40]. Markel et al.
+present GPTeach, in which a pair of student AI agents provide practice for interactive TA training
+[32].
+More broadly, educational simulations with technology have been shown to enhance learning
+in technical training [26], games [21] and engineering education [9]. Theoretical foundations for
+educational simulations have been explored in [30] and elsewhere. In the area of AI that improve
+human-to-human communication, AI-based chat interventions may improve the cordiality of
+political conversation between two humans online [6]. Similarly, human-AI collaboration through
+AI-in-the-loop has also been shown to increase conversational empathy [39].
+2.4 Collaboration analysis
+We view our analysis of ChatCollab transcripts – sequences of message between members of the
+team – as an automated form of qualitative coding. Coding in social science research is a qualitative
+data analysis method where descriptive labels are assigned to selected aspects of the data, allowing
+researchers to tabulate qualitative features. Coding labels are typically assigned by human coders
+who are given specific criteria on when to apply them. There are a number of methods, including
+comparison of codes assigned by multiple coders to assess confidence and improve tabulation.
+Because human data labeling is often a bottleneck or resource-constrained limitation of social
+=== PAGE 4 ===
+4 Klieger, Charitsis, Suzara, Wang, Haber, Mitchell
+science research, there is a growing body of recent work aimed at automated coding using LLMs.
+Some of the main areas of investigation are summarized below.
+Qualitative coding using LLMs In one study, GPT-4 achieves human-like performance in
+several coding tasks, with significant improvement when chain-of-thought reasoning is used [20].
+A comparison of GPT-3.5 Turbo and GPT-4o for inductive qualitative coding indicate that GPT-4o
+outperformed GPT-3.5, especially at low temperatures, by offering higher agreement rates and more
+consistent results compared to human coders [7]. A related proposal may effectively assist or replace
+human coders by achieving comparable accuracy and reducing coding time [19]. Coding interview
+transcriptions through generative coding and lexico-semantic coding to allow for semi-automated
+development of codebooks, enhances coding accuracy and thematic relevance while potentially
+reducing human bias and error [ 15]. A comparison using zero-shot, few-shot, and contextual
+coding on virtual tutoring session transcripts suggests that GPT-4 Turbo is generally effective
+for well-defined constructs but struggles with complex constructs and contextually dependent
+cases [29]. Another study presents an AI-based tool that assists with both inductive (data-driven)
+and deductive (codebook-based) coding, improving efficiency, consistency, and accessibility in the
+coding process; substantial alignment between human coders and QualiGPT is reported [45].
+Looking at bias and alternative language contexts, a study of ChatGPT and Llama-2 focusing on
+transcripts from 2,407 interviews with Rohingya refugees and Bangladeshi residents discussing
+their aspirations for their children, finds that LLMs introduce systematic biases, especially in
+context-sensitive data. These biases result in patterned, non-random errors; supervised models
+trained on smaller, high-quality human annotations yield more accurate and unbiased results [8].
+Semi-Automated qualitative coding Studying semi-automated qualitative coding, investiga-
+tors found that researchers prefer automation only after creating a codebook and coding an initial
+data subset, especially for extending codes to unseen data. Their prototype tool using simple NLP
+techniques achieves human-comparable inter-rater reliability [31]. Focusing on ambiguity, which
+often appears as coder disagreement, another proposed tool highlights areas of coder disagreement,
+allowing collaborative coders to explore inconsistencies and gain deeper insights [18]. Additional
+tools to systematically analyze, improve, and verify coder agreement have also been proposed [27].
+Drawing on their experience with 18 studies involving 12 to 54 coders, another effort addresses
+pragmatic challenges such as recruiting and training coders, ensuring data quality and coding
+reliability at scale, and maintaining team cohesion [13].
+3 CHATCOLLAB: CONFIGURABLE SYSTEM FOR HUMAN-AI COLLABORATION
+We present ChatCollab, a system that enables configurable teams composed of both humans and AI
+agents. Users define specific team roles assigned individually to each agent in the team — human
+or AI — allowing for flexible team configurations and enabling authentic collaboration between
+humans and AI agents as peers.
+3.1 Motivation for ChatCollab design decisions
+AI-Human collaboration may be designed to produce a work product, have some effect on the
+participants, or both. In a single sprint of a hybrid human-AI software team, for example, the primary
+goal may be the best software possible. However, if a team operates over a longer period of time,
+evolutionary improvements in the team are also important. Many team leaders and managers in
+human organizations recognize the importance of balancing work-produce goals with team morale,
+future productivity, and career development for members of the team. Because environments that
+use multiple intelligent agents to assist student learning address human engagement and progress,
+we have found it useful to draw on that literature, e.g., [14, 40]. This perspective led us to the
+following design goals:
+=== PAGE 5 ===
+ChatCollab: Exploring Collaboration Between Humans and AI Agents in Software Teams 5
+• AI agents embody different roles within the collaboration, acting different from one another
+rather than being monolithic, thus forming a genuine collaborative team.
+• AI agents within the team can be prompted to behave meaningfully differently within the
+collaboration, offering humans the ability to steer the team dynamics produced by the
+system.
+• The human(s) can assume any role within the AI Agent team, experiencing realistic collab-
+oration. The human(s) can direct the team’s progress, or have it directed by an AI Agent.
+• AI agents can be taught or give feedback by the human participants through direct, iterative
+interactions. The human can both coach and be coached by the AI Agents.
+• The environment, including a shared workspace and the details of each agent’s role, is
+conveyed equally and fully to both the human and AI agents.
+In a software development team, the hierarchical structure naturally allows for the emergence of
+teachable agents, who accept instruction, and mentor agents, who provide guidance and encour-
+agement. In practice, a human senior developer might provide feedback to an AI junior developer,
+while reporting to an AI CTO. This structure fosters the development of teamwork skills for human
+participants by engaging with agents in various capacities.
+In order to achieve the goals outlined above, we hypothesize that individual AI agents must be
+designed with the following features:
+• AI agents must have full autonomy, defined as the ability to take or not take action at any
+update in the environment, without following a predetermined sequence of decisions. This
+means the system must enable agents to be continuously aware of their environment and
+able to take or attempt actions at any time if the agent expresses such a desire.
+• AI agents should possess sufficient intelligence to be able to learn from human instruction
+and provide helpful feedback.
+• AI agents should have believable social abilities and environmental awareness, enabling
+realistic collaborations with human participants. This includes the ability to follow expected
+social etiquette in a software development team, both standardized and team-specific.
+• AI agents should each have acccess to contextual information about their environment,
+their role in completing the task at hand, and their plans to complete those tasks.
+• AI agents should have optional customizable characteristics beyond their roles in the team,
+including traits such as confidence, personality, knowledge level, and receptiveness.
+Autonomy is important to allow agents to fully respond to the human and other participants.
+Agents should be responsive to human direction, able to deviate from a sequence of artifact
+generation to communicate and collaborate with the human participants in a free-flowing dialogue.
+As mentor agents that might direct or manage humans, they must be able to provide spontaneous
+feedback to the human participant. The remaining requirements focus on the cognitive and social
+abilities of the agents. For agents to be teachable, they must be able to learn from human instruction.
+For agents to be supervisory, they must be capable of providing helpful feedback to humans. The
+cognitive requirements for the agents likely require their access to the environment, their role, and
+actions.
+3.2 ChatCollab System Description
+At a high level, the system works as follows:
+(1) A human administrator defines roles of the team by entering them into an admin dashboard.
+(2) Each AI agent is created through the system and begins running autonomously.
+(3) A shared event timeline is created that all agents have access to for communication and
+taking actions.
